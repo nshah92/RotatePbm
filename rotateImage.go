@@ -7,17 +7,22 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"path/filepath"
 )
 
 func main() {
-	//if len(os.Args) <= 1 {
-	//	fmt.Printf("USAGE : %s <target_filename> \n", os.Args[0])
-	//	os.Exit(0)
-	//}
+	if len(os.Args) <= 1 {
+		log.Fatal("only one input file is required")
+	}
 
-	//fileName := os.Args[1]
+	fileName := os.Args[1]
+	fileExt := filepath.Ext(fileName)
 
-	fileBytes, err := ioutil.ReadFile("pbmfile.pbm")
+	if fileExt != ".pbm" {
+		log.Fatal("Provide only pbm file as an input")
+	}
+
+	fileBytes, err := ioutil.ReadFile(fileName)
 	log.Printf("Processing data from file...")
 
 	if err != nil {
@@ -72,10 +77,10 @@ func rotate(matrix [][]int, rows int, columns int) [][]int{
 	for j := 0; j < columns; j++ {
 		var temp []int
 		for i := 0; i < rows; i++ {
-			fmt.Printf("%v\t", matrix[i][j])
+			//fmt.Printf("%v\t", matrix[i][j])
 			temp = append(temp, matrix[i][j])
 		}
-		fmt.Println()
+		//fmt.Println()
 		rotatedMetric = append(rotatedMetric, temp)
 	}
 	return rotatedMetric
@@ -108,6 +113,7 @@ func validateFileData(data []string) ([]string, int, int) {
 }
 
 func writeDataToFile(outputMetrix [][]int) {
+	log.Printf("Writing data to new file")
 	rows := len(outputMetrix)
 	cols := len(outputMetrix[0])
 	f, err := os.Create("pbmoutputfile.pbm")
@@ -130,6 +136,7 @@ func writeDataToFile(outputMetrix [][]int) {
 			log.Fatal(err)
 		}
 	}
+	log.Printf("Finished the process, new file %v is avaliable now" , f.Name())
 }
 
 func removeEmptyStrings(s []string) []string {
